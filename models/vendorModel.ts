@@ -12,7 +12,7 @@ interface VenderDoc extends Document {
   serviceAvailable: Boolean;
   coverImage: [String];
   rating: number;
-  food: any;
+  // food: any;
 }
 
 const venderSchema = new Schema(
@@ -64,10 +64,10 @@ const venderSchema = new Schema(
     rating: {
       type: Number,
     },
-    food: {
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: "food",
-    },
+    // food: {
+    //   type: mongoose.SchemaTypes.ObjectId,
+    //   ref: "food",
+    // },
   },
   {
     timestamps: true,
