@@ -73,3 +73,6 @@ const venderSchema = new Schema(
     timestamps: true,
   }
 );
+
+const Vender = mongoose.model<VenderDoc>("vender", venderSchema);
+export { Vender };

@@ -1,7 +1,8 @@
 import express, { Request, Response, NextFunction } from "express";
 import { CreateVendorInput } from "../dto";
+import { Vender } from "../models";
 //create vendors
-export const CreateVender = (
+export const CreateVender = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -17,6 +18,21 @@ export const CreateVender = (
     password,
     phone,
   } = <CreateVendorInput>req.body;
+
+  const vendor = await Vender.create({
+    name: name,
+    ownerName: ownerName,
+    address: address,
+    pincode: pincode,
+    foodType: foodType,
+    email: email,
+    password: password,
+    phone: phone,
+    salt: "",
+    serviceAvailable: false,
+    coverImages: [],
+    rating: 0,
+  });
 
   res.json({ message: "i am vender hahaha" });
 };
