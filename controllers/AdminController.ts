@@ -2,8 +2,8 @@ import express, { Request, Response, NextFunction } from "express";
 import { CreateVendorInput } from "../dto";
 import { Vender } from "../models";
 import bcrypt from "bcrypt";
+import { generate_Salt, hashPassword } from "../utility";
 
-// Create vendors
 export const CreateVender = async (
   req: Request,
   res: Response,
@@ -21,7 +21,7 @@ export const CreateVender = async (
       email,
       password,
       phone,
-    } = req.body;
+    } = <CreateVendorInput>req.body;
 
     console.log("checking for verification of email");
 
@@ -30,9 +30,12 @@ export const CreateVender = async (
     if (verify_email) {
       return res.status(404).json({ message: "The email already exists" });
     }
+    const salt = await generate_Salt();
+    console.log("Generated Salt:", salt);
 
-    // Corrected: Use await or .then() to handle the result of bcrypt.hash
-    const hashPassword = bcrypt.hash(password, 11);
+    // Call hashPassword with the plaintext password and the generated salt
+    const hashed = await hashPassword(password, salt);
+    console.log("Hashed Password:", hashed);
 
     const vendor = await Vender.create({
       name: name,
@@ -41,9 +44,9 @@ export const CreateVender = async (
       pincode: pincode,
       foodType: foodType,
       email: email,
-      password: hashPassword, // Use the hashed password here
+      password: hashed,
       phone: phone,
-      salt: "someSaltvalue",
+      salt: salt,
       serviceAvailable: false,
       coverImages: [],
       rating: 0,
@@ -51,15 +54,11 @@ export const CreateVender = async (
 
     res.json(vendor);
   } catch (error) {
-    // Forward the error to the global error handler
     console.log(error);
     next();
   }
 };
 
-// Other route handlers...
-
-//get multiple venders
 export const GetVenders = (req: Request, res: Response, next: NextFunction) => {
   console.log("get venders");
   res.status(404).json({ message: "vendors found " });
