@@ -4,6 +4,14 @@ import { Vender } from "../models";
 import bcrypt from "bcrypt";
 import { generate_Salt, hashPassword } from "../utility";
 
+export const FindVender = async (id: string | undefined, email?: string) => {
+  if (email) {
+    return await Vender.findOne({ email });
+  } else {
+    return await Vender.findById(id);
+  }
+};
+
 export const CreateVender = async (
   req: Request,
   res: Response,
@@ -25,7 +33,7 @@ export const CreateVender = async (
 
     console.log("checking for verification of email");
 
-    const verify_email = await Vender.findOne({ email: email });
+    const verify_email = await FindVender("", email);
 
     if (verify_email) {
       return res.status(404).json({ message: "The email already exists" });
@@ -33,7 +41,6 @@ export const CreateVender = async (
     const salt = await generate_Salt();
     console.log("Generated Salt:", salt);
 
-    // Call hashPassword with the plaintext password and the generated salt
     const hashed = await hashPassword(password, salt);
     console.log("Hashed Password:", hashed);
 
@@ -53,6 +60,7 @@ export const CreateVender = async (
     });
 
     res.json(vendor);
+    console.log(vendor);
   } catch (error) {
     console.log(error);
     next();
@@ -88,7 +96,7 @@ export const GetVendorbyId = async (
   const id = req.params.id;
 
   try {
-    const vendor = await Vender.findById(id);
+    const vendor = await FindVender(id);
 
     if (!vendor) {
       return res.json({ message: "Vendor doesn't exist" });
@@ -96,7 +104,6 @@ export const GetVendorbyId = async (
 
     res.json({ vendor, message: "Vendor found" });
   } catch (error) {
-    // Handle any potential errors
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
