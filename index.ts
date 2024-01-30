@@ -5,16 +5,17 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import { mongodb_url } from "./config";
 
-const app = express();
+const Port = 4000;
 
+const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/admin", AdminRoutes);
 app.use("/vender", VenderRoutes);
 
 mongoose.connect(mongodb_url).then(() => {
-  console.log("we are connected with mongo db");
-  app.listen(3000, "0.0.0.0", () => {
-    console.log("app is listening ");
+  console.log("Connected to MongoDB");
+  app.listen(Port, () => {
+    console.log(`App is listening on port ${Port}`);
   });
 });

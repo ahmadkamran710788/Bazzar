@@ -59,17 +59,45 @@ export const CreateVender = async (
   }
 };
 
-export const GetVenders = (req: Request, res: Response, next: NextFunction) => {
-  console.log("get venders");
-  res.status(404).json({ message: "vendors found " });
-};
-
-//get vendors
-export const GetVendorbyId = (
+export const GetVenders = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  console.log("get vender");
-  res.json({ message: "vendor found " });
+  try {
+    const vender = await Vender.find();
+    if (vender.length > 0) {
+      res.json(vender);
+      console.log("got all venders");
+    } else {
+      res.json({ message: "there are no vendors till now " });
+    }
+  } catch (error) {
+    console.error("Error fetching vendors:", error);
+    res.status(500).json({ message: "Internal server error" });
+    next(error);
+  }
+};
+
+//get vendors
+export const GetVendorbyId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const id = req.params.id;
+
+  try {
+    const vendor = await Vender.findById(id);
+
+    if (!vendor) {
+      return res.json({ message: "Vendor doesn't exist" });
+    }
+
+    res.json({ vendor, message: "Vendor found" });
+  } catch (error) {
+    // Handle any potential errors
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };

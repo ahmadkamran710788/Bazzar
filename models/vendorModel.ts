@@ -1,16 +1,16 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 interface VenderDoc extends Document {
-  name: String;
-  ownerName: String;
-  foodType: [String];
-  pincode: String;
-  address: String;
-  phone: String;
-  email: String;
-  password: String;
-  salt: String;
-  serviceAvailable: Boolean;
-  coverImage: [String];
+  name: string;
+  ownerName: string;
+  foodType: [string];
+  pincode: string;
+  address: string;
+  phone: string;
+  email: string;
+  password: string;
+  salt: string;
+  serviceAvailable: boolean;
+  coverImage: [string];
   rating: number;
   // food: any;
 }
@@ -27,12 +27,12 @@ const venderSchema = new Schema(
       required: true,
     },
     foodType: {
-      type: String,
+      type: [String],
       required: true,
     },
 
     pincode: {
-      type: [String],
+      type: String,
       required: true,
     },
     address: {
