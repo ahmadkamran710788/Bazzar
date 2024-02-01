@@ -40,7 +40,7 @@ export const getVenderProfile = async (
     const existing_User = await FindVender(user._id);
     return res.json(existing_User);
   }
-  return res.json({ message: "the user doesn't exist " });
+  return res.json({ message: "the Vender doesn't exist " });
 };
 
 export const UpdateVenderProfile = () => {};
