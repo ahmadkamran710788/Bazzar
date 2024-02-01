@@ -14,9 +14,9 @@ router.get("/", (req: Request, res: Response, next: NextFunction) => {
 });
 
 router.post("/login", VenderLogin);
-
-router.get("/profile", Authentication, getVenderProfile);
-router.patch("/profile", UpdateVenderProfile);
+router.use(Authentication);
+router.get("/profile", getVenderProfile);
+router.patch("/updateprofile", UpdateVenderProfile);
 router.patch("/services", UpdateVenderServices);
 
 export { router as VenderRoutes };

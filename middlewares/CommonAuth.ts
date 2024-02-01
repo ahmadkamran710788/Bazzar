@@ -8,10 +8,19 @@ export const Authentication = async (
   res: Response,
   next: NextFunction
 ) => {
-  const validate = await Validate_Signature(req);
-  if (validate) {
-    next();
-  } else {
-    return res.json({ message: "user is not Authorized" });
+  try {
+    const validate = await Validate_Signature(req);
+
+    if (validate) {
+      // If validation succeeds, move to the next middleware or route handler
+      next();
+    } else {
+      // If validation fails, send a response indicating unauthorized access
+      res.status(401).json({ message: "User is not authorized" });
+    }
+  } catch (error) {
+    // Handle any unexpected errors during validation
+    console.error("Authentication error:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
