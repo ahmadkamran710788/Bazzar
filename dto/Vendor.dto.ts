@@ -14,6 +14,14 @@ export interface LoginVendorInput {
   password: string;
 }
 
+export interface UpdateVenderInput {
+  name: string;
+  address: string;
+  foodType: string[];
+  password: string;
+  phone: string;
+}
+
 export interface VenderPayLoad {
   _id: string;
   email: string;

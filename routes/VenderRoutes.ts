@@ -17,6 +17,6 @@ router.post("/login", VenderLogin);
 router.use(Authentication);
 router.get("/profile", getVenderProfile);
 router.patch("/updateprofile", UpdateVenderProfile);
-router.patch("/services", UpdateVenderServices);
+router.patch("/service", UpdateVenderServices);
 
 export { router as VenderRoutes };
