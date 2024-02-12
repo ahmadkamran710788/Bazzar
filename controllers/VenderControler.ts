@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import { LoginVendorInput, UpdateVenderInput } from "../dto";
-import { Vender } from "../models";
+import { Food, Vender } from "../models";
 import { FindVender } from "./AdminController";
 import {
   GenerateSignature,
@@ -8,6 +8,7 @@ import {
   hashPassword,
   valid_password,
 } from "../utility";
+import { AddFoodInput } from "../dto/Food.dto";
 
 export const VenderLogin = async (
   req: Request,
@@ -117,5 +118,113 @@ export const UpdateVenderServices = async (
   } catch (error) {
     console.error("Error updating user profile:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const AddFood = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const { name, description, category, foodType, readytime, price } =
+      req.body as AddFoodInput;
+
+    const vender = await FindVender(user._id);
+    if (!vender) {
+      return res.status(404).json({ message: "Vendor not found" });
+    }
+
+    const files = req.files as Express.Multer.File[];
+    if (!files || files.length === 0) {
+      return res.status(400).json({ message: "No files uploaded" });
+    }
+
+    const images = files.map((file: Express.Multer.File) => file.filename);
+
+    const createFood = await Food.create({
+      venderId: vender._id,
+      name,
+      description,
+      category,
+      foodType,
+      readytime,
+      price,
+      rating: 0,
+      image: images,
+    });
+
+    vender.food.push(createFood);
+    const result = await vender.save();
+
+    return res.json(result);
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Something went wrong in adding the food" });
+  }
+};
+
+export const EditProfilePicture = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const vender = await FindVender(user._id);
+    if (!vender) {
+      return res.status(404).json({ message: "Vendor not found" });
+    }
+
+    const files = req.files as Express.Multer.File[];
+    if (!files || files.length === 0) {
+      return res.status(400).json({ message: "No files uploaded" });
+    }
+
+    const images = files.map((file: Express.Multer.File) => file.filename);
+
+    vender.coverImage.push(...images);
+    const result = await vender.save();
+
+    return res.json(result);
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Something went wrong in adding the food" });
+  }
+};
+//we will get food over here
+
+export const GetFood = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user;
+    if (user) {
+      const food = await Food.find({ venderId: user._id });
+      if (food != null) {
+        res.json(food);
+      } else {
+        res.json({ message: "no food in the list " });
+      }
+    } else {
+      return res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    res.json({ message: " something went wrong in getting the food" });
   }
 };

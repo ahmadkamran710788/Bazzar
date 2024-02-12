@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Document, model } from "mongoose";
 interface VenderDoc extends Document {
   name: string;
   ownerName: string;
@@ -12,7 +12,7 @@ interface VenderDoc extends Document {
   serviceAvailable: boolean;
   coverImage: [string];
   rating: number;
-  // food: any;
+  food: any;
 }
 
 const venderSchema = new Schema(
@@ -64,10 +64,12 @@ const venderSchema = new Schema(
     rating: {
       type: Number,
     },
-    // food: {
-    //   type: mongoose.SchemaTypes.ObjectId,
-    //   ref: "food",
-    // },
+    food: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "food",
+      },
+    ],
   },
   {
     timestamps: true,
