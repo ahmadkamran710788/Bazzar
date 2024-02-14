@@ -1,2 +1,3 @@
 import { VenderPayLoad } from "./Vendor.dto";
-export type AuthPay = VenderPayLoad;
+import { CustomerPayLoad } from "./Customer.dto";
+export type AuthPay = VenderPayLoad | CustomerPayLoad;

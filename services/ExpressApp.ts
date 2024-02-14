@@ -1,6 +1,11 @@
 // index.ts
 import express, { Application } from "express";
-import { AdminRoutes, ShoppingRoutes, VenderRoutes } from "../routes";
+import {
+  AdminRoutes,
+  CustomerRoute,
+  ShoppingRoutes,
+  VenderRoutes,
+} from "../routes";
 import bodyParser from "body-parser";
 import path from "path";
 
@@ -11,6 +16,8 @@ export default async (app: Application) => {
 
   app.use("/admin", AdminRoutes);
   app.use("/vender", VenderRoutes);
-  app.use("/shopping", ShoppingRoutes);
+  app.use(ShoppingRoutes);
+  app.use("/customer", CustomerRoute);
+
   return app;
 };

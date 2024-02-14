@@ -5,7 +5,7 @@ import {
   GetTopRestaurants,
   RestaurantById,
   SearchFoods,
-} from "../controllers/ShoppingControllers";
+} from "../controllers";
 const routes = express.Router();
 
 ///////////////////food Availability /////////////////////
