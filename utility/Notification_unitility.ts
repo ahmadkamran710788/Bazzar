@@ -1,5 +1,7 @@
 //email
 
+import { accountSid, authToken } from "../config";
+
 //notification
 //OTP
 
@@ -9,15 +11,13 @@ export const GenerateOpt = () => {
   expiry.setTime(new Date().getTime() + 30 * 60 * 1000);
   return { otp, expiry };
 };
-
 export const onRequestOTP = async (otp: number, tothephone: string) => {
-  const acountSid = "ACea220f3d9543ad9b5fe067581bc3ca02";
-  const authToken = "f8a36a315878a2d3f8d306e8c818dd46";
-  const client = require("twilio")(acountSid, authToken);
-  const message = await client.message.create({
-    body: `your OTP is ${otp}`,
-    from: "+15169732995",
-    to: tothephone,
+  const client = require("twilio")(accountSid, authToken);
+
+  const message = client.messages.create({
+    body: `OPT:${otp}`,
+    to: "+15169732995", // Text your number
+    from: `+92${tothephone}`, // From a valid Twilio number
   });
   return message;
 };

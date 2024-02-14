@@ -4,7 +4,7 @@ import { Request } from "express";
 import { VenderPayLoad } from "../dto";
 import { secretKey } from "../config";
 import { AuthPay } from "../dto/Auth.dot";
-export const generate_Salt = async() => await bcrypt.genSalt();
+export const generate_Salt = async () => await bcrypt.genSalt();
 
 export const hashPassword = (password: string, salt: string) =>
   bcrypt.hash(password, salt);
@@ -12,7 +12,7 @@ export const hashPassword = (password: string, salt: string) =>
 export const valid_password = (userPassword: string, hash: string) => {
   return bcrypt.compare(userPassword, hash);
 };
-export const GenerateSignature = (payload: VenderPayLoad) => {
+export const GenerateSignature = (payload: AuthPay) => {
   const signature = jwt.sign(payload, secretKey, { expiresIn: "1d" });
   return signature;
 };
