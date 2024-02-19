@@ -7,6 +7,7 @@ import {
   GetCustomerProfile,
   RequestOpt,
 } from "../controllers";
+import { Authentication } from "../middlewares";
 const route = express.Router();
 
 //////////Signup/Create-Customer
@@ -17,6 +18,8 @@ route.post("/Signup", CustomerSignup);
 route.post("/Login", CustomerLogin);
 
 //Authentication////////////
+route.use(Authentication);
+
 //////////////Verify CustomerAccount/////////
 route.patch("/verfy-cutomer", CustomerVerify);
 

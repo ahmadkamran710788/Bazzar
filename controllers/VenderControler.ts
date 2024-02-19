@@ -132,8 +132,9 @@ export const AddFood = async (
       return res.status(404).json({ message: "User not found" });
     }
 
-    const { name, description, category, foodType, readytime, price } =
-      req.body as AddFoodInput;
+    const { name, description, category, foodType, readytime, price } = <
+      AddFoodInput
+    >req.body;
 
     const vender = await FindVender(user._id);
     if (!vender) {
