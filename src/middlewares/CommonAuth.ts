@@ -3,6 +3,14 @@ import { AuthPay } from "../dto/Auth.dot";
 import { Validate_Signature } from "../utility";
 import express, { Response, Request } from "express";
 
+declare global {
+  namespace Express {
+    interface Request {
+      user?: AuthPay;
+    }
+  }
+}
+
 export const Authentication = async (
   req: Request,
   res: Response,
