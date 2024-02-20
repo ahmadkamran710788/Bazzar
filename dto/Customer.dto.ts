@@ -11,6 +11,17 @@ export class CreateCustomerInput {
   password: string;
 }
 
+export class CustomerProfileInput {
+  @Length(3, 16)
+  firstName: string;
+
+  @Length(3, 16)
+  lastName: string;
+
+  @Length(3, 16)
+  address: string;
+}
+
 export class CustomerLoginInput {
   @IsEmail()
   email: string;

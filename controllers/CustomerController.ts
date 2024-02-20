@@ -1,7 +1,11 @@
 import express, { Request, Response, NextFunction } from "express";
 import { plainToClass } from "class-transformer";
 import { IsEmail, ValidationError, validate } from "class-validator";
-import { CreateCustomerInput, CustomerLoginInput } from "../dto/Customer.dto";
+import {
+  CreateCustomerInput,
+  CustomerLoginInput,
+  CustomerProfileInput,
+} from "../dto/Customer.dto";
 import {
   GenerateOpt,
   GenerateSignature,
@@ -80,25 +84,43 @@ export const CustomerLogin = async (
   res: Response,
   next: NextFunction
 ) => {
-  const LoginInput = plainToClass(CustomerLoginInput, req.body);
-  const LoginErrors = await validate(LoginInput, {
-    validationError: { target: false },
-  });
-  if (LoginErrors.length > 0) {
-    return res.status(400).json(LoginErrors);
-  }
+  try {
+    const LoginInput = plainToClass(CustomerLoginInput, req.body);
+    const LoginErrors = await validate(LoginInput, {
+      validationError: { target: false },
+    });
 
-  const { email, password } = LoginInput;
-  const customer = await Customer.findOne({ email });
-  if (customer) {
-    const validation = await valid_password(password, customer.password);
-    if (validation) {
-      const signature = await GenerateSignature({
-        _id: customer.id,
-        email: customer.email,
-        verified: customer.verified,
-      });
+    if (LoginErrors.length > 0) {
+      return res.status(400).json(LoginErrors);
     }
+
+    const { email, password } = LoginInput;
+    const customer = await Customer.findOne({ email });
+
+    if (customer) {
+      const validation = await valid_password(password, customer.password);
+
+      if (validation) {
+        const signature = await GenerateSignature({
+          _id: customer.id,
+          email: customer.email,
+          verified: customer.verified,
+        });
+
+        return res.status(200).json({
+          signature: signature,
+          verify: customer.verified,
+          email: customer.email,
+        });
+      } else {
+        return res.status(404).json({ message: "Password doesn't match" });
+      }
+    }
+
+    return res.status(404).json({ message: "Customer not found" });
+  } catch (error) {
+    // Handle any unexpected errors
+    next(error);
   }
 };
 
@@ -136,16 +158,65 @@ export const RequestOpt = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {};
+) => {
+  const user = req.user;
+  if (user) {
+    const customer = await Customer.findById(user._id);
+    if (customer) {
+      const { otp, expiry } = GenerateOpt();
+      customer.otp = otp;
+      customer.otp_expiry = expiry;
+      await customer.save();
+      //await onRequestOTP(otp, customer.phone);
+      return res.status(200).json(`otp send to the customer :${otp}`);
+    }
+  }
+  return res.status(401).json("something went wrong");
+};
 
 export const GetCustomerProfile = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {};
+) => {
+  const user = req.user;
+
+  if (user) {
+    const customer = await Customer.findById(user._id);
+    if (customer) {
+      //await onRequestOTP(otp, customer.phone);
+      return res.status(200).json(customer);
+    }
+  }
+  return res.status(404).json({ message: "Some thing went wrong" });
+};
 
 export const EditCustomerProfile = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {};
+) => {
+  const user = req.user;
+  const profileInput = plainToClass(CustomerProfileInput, req.body);
+  const inputErrors = await validate(profileInput, {
+    validationError: { target: false },
+  });
+
+  if (inputErrors.length > 0) {
+    return res.status(400).json(inputErrors);
+  }
+  const { firstName, lastName, address } = profileInput;
+  if (user) {
+    const customer = await Customer.findById(user._id);
+    if (customer) {
+      customer.firstName = firstName;
+      customer.lastName = lastName;
+      customer.address = address;
+
+      const person = await customer.save();
+      //await onRequestOTP(otp, customer.phone);
+      return res.status(200).json(person);
+    }
+  }
+  return res.status(404).json({ message: "Some thing went wrong" });
+};
